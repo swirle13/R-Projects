@@ -1,0 +1,12 @@
+```{r}
+url <- "/data/email.csv"
+email <- read.csv(url)
+phat <- mean(email$spam)
+n <- length(email$spam)
+tstar <- qt(.99, n - 1)
+s <- sd(email$spam)
+c(phat - (tstar)*(s/sqrt(n)), phat + (tstar)*(s/sqrt(n)))
+
+# We are 98% confident that the proportion of emails that are spam 
+```
+

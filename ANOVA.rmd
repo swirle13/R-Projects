@@ -1,0 +1,32 @@
+---
+title: "ANOVA"
+author: "Matthew Johnson"
+date: "October 26, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 5, fig.height = 4, echo = TRUE)
+suppressMessages(library(tidyverse))
+```
+
+1) I chose the data set "diamonds." I'm doing my analysis on the price of diamonds based on the clarity.
+Price is in US dollars and clarity is a measurement of how clear the diamond is, I1 is worst, IF is best.
+```{r Problem 2}
+data("diamonds")
+
+p <- qplot(clarity, price, data=diamonds, geom="boxplot") + stat_summary(fun.y=mean, colour="dark gray",
+geom="point", size=4) + theme(axis.text.x=element_text(angle=45, hjust=1))
+p
+```
+
+3) ANOVA is valid in this choice of variables I've made. The observations are independent, the data between these groups are independent, and most importantly the variability between groups is about same and not so different to affect ANOVA.
+
+4) Null hypothesis: All mean prices between clarity of diamonds is about equal.
+Alternate hypothesis: At least one of the mean prices is different.
+alpha = 0.02
+```{r Problem 4}
+model <- lm(price~clarity, data=diamonds)
+anova(model)
+```
+5) We have an F-value of 215 and our p-value is roughly 2.2e-16, so extremely small. Both of these indicate that we can reject the null hypothesis. Rejection of the null hypothesis indicates to us that the differences in clarity do not have the same mean price. English version: The range of clarities of diamonds do not have the same average price.

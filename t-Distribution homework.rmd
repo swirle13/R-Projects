@@ -1,0 +1,85 @@
+Matthew Johnson
+
+Math 314
+
+Prof Roualdes
+
+Oct 11, 2017
+
+```{r Problem 1}
+url <- "C:/Programming/R stuff/email.csv"
+email <- read.csv(url)
+
+# Part A
+line_breaks <- (email$line_breaks > 1)
+xbar <- mean(line_breaks)
+n <- length(line_breaks)
+tstar <- qt(.9, n - 1)
+s <- sd(line_breaks)
+se <- s/sqrt(n)
+proportion_line_breaks_over_one <- c(xbar - tstar * se, xbar + tstar * se)
+
+# I am 90% confident that the proportion of emails with line breaks greater than one is between 0.99902 and 0.99995.
+
+# Part B
+# H0: line_breaks = 250
+# HA: line_breaks != 250
+
+alpha <- 0.05 # this implies 95% confidence
+mu_naught <- 250
+xbar2 <- mean(email$line_breaks)
+n2 <- length(email$line_breaks)
+s2 <- sd(email$line_breaks)
+z <- (xbar2 - mu_naught)/(s2)
+p <- 2*(1-pnorm(abs(z)))
+p < alpha # False, alpha is not greater than p. P-value not low, fail to reject H0.
+# Since our P-value is not less than alpha, our Level of significance, we fail to reject H0. 
+
+# Part C
+se2 <- s2/sqrt(n2)
+xbar2 + qnorm(c(0.025, 0.975))*se2
+
+# Part D
+# Does your confidence interval match the conclusion from your hypothesis test?
+# Yes it does. I asserted as an alternate hypothesis that the mean is not 250 line breaks.
+# With 95% confidence, our confidence interval from 220.66 to 240.65 does not contain 250, proving our alternate hypothesis.
+
+# Part E
+# What does the confidence interval tell you that the hypothesis test does not?
+# The confidence interval tells me with high confidence, the range of the population mean of line breaks in the emails.
+# The hypothesis test only allowed us to fail to reject H0, but not confirm the alternative hypothesis.
+
+# Part F
+email[1771, ]
+# Email number 1771 has an unusually large amount of either dollar signs or the word "dollar" included in this email.
+# Email 1771 has a very out of the ordinary number of characters, having over 190 thousand characters.
+# Email 1771 also has a very large number of exclamation points in the email, 1236 to be exact.
+
+# Part G
+suppressMessages(library(ggplot2))
+qplot(line_breaks, data=email, geom="histogram") # can't get this to display 0/1
+
+# This graph (supposedly) shows the proportion of emails with a one or less line breaks to emails with more than one line break.
+
+qplot(email$line_breaks, data=email, geom="histogram", binwidth = 50)
+
+# This graph shows the distribution of line breaks amongst all the emails in the data set.
+
+# Part H
+# The mean is a much better representation of the number of line breaks in emails due to a far right skew
+# caused by one massive outlier and a few larger outliers with many more line breaks than the average.
+
+```
+
+```{r Problem 2}
+n3 <- 36
+l_conf_int <- 18.985
+r_conf_int <- 21.015
+# sample mean
+(sample_mean <- (l_conf_int + r_conf_int)/2)
+# sample standard deviation
+(std_dev <- sample_mean-l_conf_int)
+# t <- (l_conf_int + r_conf_int)/(std_dev/n3)
+# 2*(1-pt(abs(t), n3-1))
+```
+

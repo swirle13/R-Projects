@@ -1,0 +1,187 @@
+1. Read in our hospital dataset (creating a data frame):
+head.http://roualdes.us/data/hospital.csv.  Please download the dataset
+manually, put it in a folder specific to this class and call
+read.csv() on the file path.  Hint: ?read.csv
+
+2. Using the hospital dataset, calculate each of the statistics
+discussed in class on variables of your choice.
+Hint: library(tidyverse); ?dplyr::summarise
+
+```{r}
+# url <- "C:\Programming\R stuff\hospital.csv"
+hospital <- read.csv(file="hospital.csv", header=TRUE, sep=",")
+
+mean(hospital$stay)
+median(hospital$stay)
+sd(hospital$stay)
+stats::IQR(hospital$stay)
+quantile(hospital$stay)
+
+mean(hospital$infection_risk)
+median(hospital$infection_risk)
+sd(hospital$infection_risk)
+IQR(hospital$infection_risk)
+quantile(hospital$infection_risk)
+
+mean(hospital$age)
+median(hospital$age)
+sd(hospital$age)
+IQR(hospital$age)
+quantile(hospital$age)
+
+mean(hospital$xray)
+median(hospital$xray)
+sd(hospital$xray)
+IQR(hospital$xray)
+quantile(hospital$xray)
+
+mean(hospital$beds)
+median(hospital$beds)
+sd(hospital$beds)
+IQR(hospital$beds)
+quantile(hospital$beds)
+
+mean(hospital$region)
+median(hospital$region)
+sd(hospital$region)
+IQR(hospital$region)
+quantile(hospital$region)
+
+mean(hospital$nurses)
+median(hospital$nurses)
+sd(hospital$nurses)
+IQR(hospital$nurses)
+quantile(hospital$nurses)
+```
+
+3. Describe each statistic in plain English.
+
+The mean hospital stay, meaning the average length of time spent at the hospital, is 9.6 days.
+The median hospital stay, meaning the center of all the combined stays, is 9.4 days.
+The standard deviation of these stays is about 1.9, meaning that roughly 68% of stays are +/- 2 days of the average, 9.6 days. This means 68% of stays are within 7.7 - 11.5 days long.
+
+
+4. On average which regions tend to have a larger mean/standard
+deviation of infection_risk?
+Hint, from most recommended, to least:
+library(tidyverse); ?dplyr::group_by
+
+```{r}
+dplyr::summarise(dplyr::group_by(hospital, region), mn=mean(infection_risk))
+```
+On average, region 1 has a larger average of infection risk.
+```{r}
+dplyr::summarise(dplyr::group_by(hospital, region), sd=sd(infection_risk))
+```
+On average, region 3 has a larger range of infection risks.
+
+5. Make at least one plot of each of the plot types discussed in
+class, using the hospital dataset.  Describe, with full sentences
+and language your grandmother could understand, each plot.
+Hint: see class notes and make sure things that supposed to be
+categorical variables are indeed recognized as factors.
+
+
+This plot is the spread of the lengths of stay in days at the hospital.
+
+```{r}
+ggplot2::qplot(stay, data=hospital, geom="histogram")
+```
+
+This plot shows the median (the black bar in the box) of the infection risk in different regions. The white boxes show the middle of the data, being the 2nd and 3rd quarters of the data, showing the middle range.
+
+```{r}
+ggplot2::qplot(factor(region), infection_risk, data=hospital, geom="boxplot")
+```
+
+In this chart, we have a scatterplot of the stay in days and the ages of patients that stay.
+
+```{r}
+ggplot2::qplot(stay, age, data=hospital)
+```
+
+6. Make a list (map/dict) containing at least four different types
+of R objects (e.g. boolean, numeric, string, vector, list, data
+frame, matrix).
+Hints: ?list, ?vector, ?matrix, ?data.frame
+
+```{r}
+table <- data.frame(x=1:5, y=1:5, z=1:5)
+test_string = "puppy dogs"
+num_vector <- 1:5
+x <- 3:7
+test_vector <- x
+
+list(a=table, b=test_string, c=num_vector, d=test_vector)
+```
+
+
+7. What is the difference between these two methods of list
+extraction, [ and [[?
+Hint: ?[[
+
+Using one bracket allows selecting of more than one element whereas two brackets only allows selecting a single element.
+
+
+8. Create a vector of length > 1.  Write a function that uses a for
+loop to add 1 to each element.
+Hint: ?c, ?rep
+
+```{r}
+x <- 3:7
+out <- rep(NA, length(x))
+for (i in seq_along(x)) {
+  out[i] <- x[i]+1
+}
+```
+
+9. With your original vector from 7., naively add the integer one
+to the entire vector.
+NB: Check out the following link about vectorization:
+http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html
+
+```{r}
+table$x+1
+```
+
+
+10. Sample 100 integers between 0 and 10, and store it in
+a vector.
+Hint: ?base::sample
+
+```{r}
+number10 <- sample(10, 100, replace = TRUE)
+```
+
+11. Check which values are greater than 7, and store the
+output in a new vector.  Print the new vector.
+Hint: ?>
+
+```{r}
+num_greater_than_7 <- number10 > 7
+num_greater_than_7
+```
+
+12. Use the vector from 11. to index the original vector from 10.
+Hint: ?[
+
+```{r}
+num_greater_than_7[number10>7] # was told x[x > 2] was basically the answer
+```
+
+13. Use one line of code to calculate the proportion of values in
+the vector from 10. that are greater than 7.
+
+```{r}
+sum(number10 > 7)/sum(number10)
+```
+
+
+14. Using the dataset hospital, make one of each type of plot --
+for a challenge, try ggplot2::ggplot.
+
+Section not needed as #5 already did this, as noted in your email.
+
+
+15. Check out https://yihui.name/knitr/ for writing up your answers
+to this lab.  Also, see my solutions to Lab 01.

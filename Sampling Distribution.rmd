@@ -1,0 +1,85 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r Problem 1}
+
+Y <- rnorm(1001, 3, 5)
+ll_norm <- function(mu, x) {
+  sum((x - mu)^2)
+}
+(optim(1, ll_norm, method="L-BFGS", x=Y)$par)
+
+# Calling mean on sample distribution to compare results
+(mean(Y))
+# Calling standard deviation on sample distribution to compare results
+(sd(Y))
+
+```
+
+```{r Problem 2}
+rng_normal <- function(n) {
+  x <- rnorm(n, 3, 5)
+  # x <- randomly sample some data
+  mle <- optim(10, ll_norm, method="L-BFGS", x=x)$par # this is X bar
+  ((mle - 3)/((5)/sqrt(n)))
+}
+
+applet <- function(rng, n, R) {
+  Out <- rep(NA, R)
+  for(i in 1:R) {
+    Out[i] <- rng(n)
+  }
+   return(Out)
+}
+
+# Question A
+# The histogram resembles our given input more and more with a higher sample size.
+# As our sample size increases, our uncertainty decreases.
+ggplot2::qplot(applet(rng_normal, 10, 100), geom="histogram", bins=50)
+# applet(100, 10000)
+ggplot2::qplot(applet(rng_normal, 100, 1000), geom="histogram", bins=50)
+# applet(10000, 100000)
+ggplot2::qplot(applet(rng_normal, 1000, 10000), geom="histogram", bins=50)
+```
+
+```{r}
+
+# Question B 
+
+ll_binom <- function(p, x) {
+  # f(x) = (p^x)(1-p)^(1-x)
+  # return (p - 1)*((1 - p)^(-x))*((p^x)*(log(1 - p) - log(p)))
+  n <- length(x)
+  -(sum(x)*log(p) + (n - sum(x))*log(1 - p))
+}
+
+rng_binom <- function(n) {
+  y <- rbinom(n, 1, 0.25)
+  mle <- optim(.1, ll_binom, method="L-BFGS", x=y, lower = .0000001, upper = .9999999)$par # this is X bar, BEST GUESS
+  ((mle - 0.25)/((0.433)/sqrt(n))) # THIS WILL BE CALCULATED BASED ON THIRD ARGUMENT OF rbinom()
+  # 0.25 is our mu, or p, so 0.25
+  # the 0.433 is calculated by finding the std deviation: sigma = sqrt(p*(1-p)) which is sqrt(0.25*0.75) = 0.433
+}
+
+# applet(rng_binom, 1, 100)
+ggplot2::qplot(applet(rng_binom, 10, 1000), geom="histogram", bins=50)
+# applet(rng_binom, 1, 1000)
+ggplot2::qplot(applet(rng_binom, 100, 1000), geom="histogram", bins=50)
+# applet(rng_binom, 1, 10000)
+ggplot2::qplot(applet(rng_binom, 420, 10000), geom="histogram", bins=50)
+
+# Question C
+#
+# The sampling distribution is very near identical to the last functions.
+# The sampling distribution should be very similar no matter what data we gather it from
+# due to the Central Limit Theorem stating that the more sample means we take, the 
+# closer to the population mean we will get, with a normal distribution. 
+# 
+```
+
+
+
+
+

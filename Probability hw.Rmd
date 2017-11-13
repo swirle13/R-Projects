@@ -1,0 +1,75 @@
+---
+title: "Probability Homework"
+author: "Matthew Johnson"
+date: "September 6, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. The balloons probability is just out of 25 balloons, 10 yellow, 8 red, 7 green. This means probability of getting a yellow is 10/25. The probability of popping a second yellow balloon is one less yellow balloon out of the total balloons after a balloon popped, so 9/24. So the combination of the two means AND, meaning multiplication. so 10/25 * 9/24.
+```{r}
+prob_yellow <- 10/25
+prob_second_yellow <- 9/24
+(prob_two_yellow <- prob_yellow*prob_second_yellow)
+```
+
+2. This is definitely an experiment because the people conducting it are interacting and affecting the outcomes and recording the results. The plot shows that, on average, OJ causes higher odontoblast length because the interquartile range, the middle 50%, is, on average, higher (meaning longer length odontoblast) than the VC per dose.
+```{r}
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+names(ToothGrowth)
+x <- ToothGrowth$dose
+y <- ToothGrowth$len
+ggplot2::qplot(x, y, geom = "boxplot")
+```
+
+3. So ABC are sequential and its output is then input into a parallel system of DEF. So we have to take the probability of all ABC fails and THEN the possiblity of ABCD failing, ABCE failing, and ABCF failing. So if any ABC fail, the system is down, so A OR B OR C. If all D, E, and F fail, the system goes down. so D AND E AND F.
+```{r}
+A <- 0.1
+B <- 0.15
+C <- 0.2
+D <- 0.9
+E <- 0.85
+F <- 0.8
+
+#P(A or B or C) and P(D and E and F)
+((A + B + C) * (D * E * F))
+```
+
+4.
+```{r}
+groceries <- read.csv("C:/Programming/R stuff/groceries.csv")
+# calculating the support of the different associations - P(A&B)
+curd_cereals_wholemilk <- mean(groceries$curd & groceries$cereals & groceries$whole.milk)
+curd_cereals_wholemilk
+
+yogurt_cereals_wholemilk <- mean(groceries$yogurt & groceries$cereals & groceries$whole.milk)
+yogurt_cereals_wholemilk
+
+liquor_redwine_bottledbeer <- mean(groceries$liquor & groceries$red.blush.wine & groceries$bottled.beer)
+liquor_redwine_bottledbeer
+
+# calculating the confidence of the different associations - P(A&B)/P(A)
+curd_cereals_wholemilk_conf <- mean(groceries$curd & groceries$cereals & groceries$whole.milk)/groceries$whole.milk
+curd_cereals_wholemilk_conf
+
+yogurt_cereals_wholemilk_conf <- mean(groceries$yogurt & groceries$cereals &groceries$whole.milk)/groceries$whole.milk
+yogurt_cereals_wholemilk_conf
+
+liquor_redwine_bottledbeer_conf <- mean(groceries$liquor & groceries$red.blush.wine & groceries$bottled.beer)/groceries$bottled.beer
+liquor_redwine_bottledbeer_conf
+
+# calculating the lift of the different associations - LIft = P(A&B)/(P(A)*P(B))
+curd_cereals_wholemilk_lift <- mean(groceries$yogurt & groceries$cereals &groceries$whole.milk)/(curd_cereals_wholemilk*groceries$whole.milk)
+curd_cereals_wholemilk_lift
+
+yogurt_cereals_wholemilk_lift <- mean(groceries$yogurt & groceries$cereals &groceries$whole.milk)/(yogurt_cereals_wholemilk*groceries$whole.milk)
+yogurt_cereals_wholemilk_lift
+
+liquor_redwine_bottledbeer_lift <- mean(groceries$liquor & groceries$red.blush.wine & groceries$bottled.beer)/(liquor_redwine_bottledbeer*groceries$bottled.beer)
+liquor_redwine_bottledbeer_lift
+
+```
+

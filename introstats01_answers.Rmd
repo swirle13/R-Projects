@@ -1,0 +1,108 @@
+## Lab 01: Introduction to Statistics and R
+
+To compile this document in RStudio open the file and click knit in the toolbar.  In any other text editor, call rmarkdown::render() on this file's quoted filepath.  You may need to install the library named rmarkdown first.  Learn more about [Rmarkdown](http://rmarkdown.rstudio.com/lesson-1.html) and [knitr](https://yihui.name/knitr/).
+
+1. R(Studio) has built in help files, try
+?mean
+
+2. Read in the dataframe from Lecture IntroStats slide 13/76 into a
+ variable named email.
+
+```{r}
+url <- "https://roualdes.us/data/email.csv"
+email <- read.csv(url)
+```
+
+3. Copy and paste all the code from Lecture IntroStats slide 13/76 -
+23/76
+
+```{r}
+is.factor(email$number)
+is.factor(email$spam)
+is.numeric(email$spam)
+head(email$spam)
+is.factor(factor(email$spam))
+is.numeric(email$num_char)
+phat <- sum(email$spam)/length(email$spam)
+phat == mean(email$spam)
+```
+
+4. Pick another numerically encoded, binary, categorical variable
+from this dataset named email, and calculate the proportion two
+ways.  Assuming this is a random sample of emails, interpret the
+number in language that your grandmother could understand.
+Hints: ?head; ?names; ?== or ?\`==\`
+
+```{r}
+sum(email$to_multiple)/length(email$to_multiple)
+mean(email$to_multiple)
+```
+
+An estimate of the true population proportion of emails that are
+directed to multiple recipients is about `r round(mean(email$to_multiple), 2)`%.
+
+5. You can create regular sequences with :.  Use : to create a
+regular sequence of non-zero integers less than 3921 and store it
+into a variable named x.  Just for added difficulty later on, don't
+start at 1.
+
+Hint: one of these should work for you ?\`:\` # or ?:
+
+```{r}
+x <- 4:62
+```
+
+6. R uses square brakets [] for indexing vectors.  Extract the
+first element of the variable you named x, by indexing it
+with brackets.
+
+Hint: ?\`[\` # or ?[
+
+```{r}p
+x[1]
+```
+
+7. Using the variable you unamed x, extract x-th elements from a
+column of your choice from the dataframe named email.
+
+```{r}
+email$to_multiple[x]
+```
+
+8. Use a for loop to accomplish the same thing from 7.
+
+```{r}
+## if you are going to store these values, initialize the storage
+## container first.  A good way to do this in R is
+out <- rep(NA, length(x))
+for (i in seq_along(x)) {
+    out[i] <- email$to_multiple[x[i]]
+}
+## now, if any  values of out are still NA, we know we messed up
+```
+
+9. Pick a continuous, numerical variable from the dataframe email
+and calculate the mean, median, and standard deviation.
+For added challenge, try using dplyr::summarise.
+
+Hint: library(tidyverse); ?dplyr::summarise
+
+```{r}
+## for more on dplyr read http://seananderson.ca/2014/09/13/dplyr-intro.html
+library(dplyr)                          # or tidyverse
+dplyr::summarise(email,
+                 mn=mean(line_breaks),
+                 mdn=median(line_breaks),
+                 s=sd(line_breaks))
+```
+
+10. Using the dataframe email, make one of each type of plot -- don't
+steal my plots, make your own.
+
+```{r, fig.width=4, fig.height=4, fig.align="center"}
+library(ggplot2)                        # or tidyverse
+qplot(spam, data=email, geom="bar")
+qplot(num_char, data=email, geom="histogram", bins=30)
+qplot(factor(to_multiple), num_char, data=email, geom="boxplot")
+qplot(num_char, line_breaks, data=email)
+```

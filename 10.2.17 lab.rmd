@@ -1,0 +1,12 @@
+```{r}
+z <- rbinom(1001, 1, .5)
+
+ll_bernoulli <- function(p, x) {
+  n <- length(x)
+  -1*(log(p)*sum(x) + (n-sum(x))*log(1-p))
+}
+optim(0.5, ll_bernoulli, method = "L-BFGS", x=z,
+      lower=0.0000001, upper = 0.999999)$par
+
+
+```

@@ -1,0 +1,149 @@
+---
+title: "ttest"
+author: "Matthew Johnson"
+date: "October 19, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=5, fig.height=4, echo = TRUE)
+```
+
+
+```{r Problem 1}
+library(ape)
+suppressMessages(library(tidyverse))
+data(carnivora)
+```
+A)
+Carnivora is a dataset that contains observations about the Carnivora family.
+GL is the gestation length of the selected family and is measured in days.
+BW is birth weight in grams.
+
+```{r Problem 1, B}
+GL <- na.omit(carnivora$GL)
+qplot(GL, geom="histogram", bins=30)
+qplot(SuperFamily, GL, data=carnivora, geom = "boxplot")
+```
+
+```{r Problem 1, C}
+dGL <- carnivora %>% 
+  select(GL, SuperFamily) %>%
+  na.omit() %>%
+  group_by(SuperFamily) %>% 
+  summarise(MnGL = mean(GL, na.rm=TRUE),
+            VarGL = var(GL, na.rm=TRUE),
+            MedGL = median(GL, na.rm=TRUE),
+            SDGL = sd(GL, na.rm=TRUE),
+            NumGL = length(GL))
+dGL
+```
+D)
+The plot above for Gestation Length has a right skew due to an outlier at around 180 days. The mean of the Gestation Length is 58 days for Caniformia, and 75 days for Feliformia. The median gestation length for Caniformia is 59 days and for Feliformia is 71 days. My sample distribution could be skewed based on random selecting from just one or the other super family. It could also be affected due to the total sample size of a specific super family due to the small population size, thus not allowing a sufficiently large enough sample size to create a normal distribution.
+ normal.
+
+E-H)
+One-Sample Hypothesis test
+H null: Mean gestation length for carnivora is 60 days.
+H alt:  Mean gestation length for carnivora is not 60 days.
+alpha = 0.02
+```{r Problem 1, E/F/G/H}
+n <- length(na.omit(GL))
+se <- sd(na.omit(GL))/sqrt(n)
+mean(na.omit(GL)) + qt(c(.01, .99), n-1)*se
+
+t <- (mean(na.omit(GL)) - 60)/se
+p <- 2*(1-pt(abs(t),df= n-1))
+```
+
+We are 98% confident that the mean gestation length of Carnivora is between 59.8 and 71.8 days.
+Our p-value was almost equal to our level of significance, so we failed to reject the null hypothesis.
+The average length of time a dog or cat spends pregnant is between 60 days and about 72 days.
+
+Two-Sample Hypothesis Test
+H null: Gestation length of Caniformia and Feliformia is the same.
+H alt: Gestation length of Caniformia and Feliformia is not the same.
+alpha = 0.02
+```{r}
+with(dGL, {
+  tstar <- qt(c(0.01, 0.99), min(n-1))
+  -diff(MnGL) + tstar*sqrt(sum(VarGL/n))})
+
+# p-value
+with(dGL, {
+  t <- diff(MnGL)/sqrt(sum(VarGL/n))
+  2*(1-pt(abs(t), min(n-1)))})
+```
+
+I am 98% conident that the population difference in mean gestation length between SuperFamilies
+Caniformia and Feliformia is between -25.03 and -9.61 days.
+Our p-value is much smaller than our level of significance, so we can reject our null hypothesis.
+Cats are pregnant longer than dogs by between 9 and 25 days.
+
+```{r Problem 2}
+url <- "C:/Programming/R stuff/finches.csv"
+finches <- read.csv(url)
+```
+
+A)
+Finches is a dataset that contains observations of different finches.
+Winglength is the length in millimeters.
+```{r Problem 2, B}
+WL <- na.omit(finches$winglength)
+qplot(WL, geom="histogram", bins=30)
+qplot(island, winglength, data=finches, geom = "boxplot")
+
+```
+
+```{r Problem 2, C}
+dWL <- finches %>% 
+  select(winglength, island) %>%
+  na.omit() %>%
+  group_by(island) %>% 
+  summarise(MnWL = mean(winglength, na.rm=TRUE),
+            VarWL = var(winglength, na.rm=TRUE),
+            MedWL = median(winglength, na.rm=TRUE),
+            SDWL = sd(winglength, na.rm=TRUE),
+            NumWL = length(winglength))
+dWL
+```
+D)
+The histogram above has a left skew due to a few very short winglengths. The box plot above shows the different ranges of the middle 50% of the data, santacruz finches having the widest distribution, and sancristobal having the smallest. There is a large enough sample size for these finches to provide us ample data for a normal sample distribution. The Central Limit Theorem states that given a large enough sample size, our sample distribution will be normal.
+
+E/F/G/H)
+One-Sample Hypothesis test
+H null: Mean wing length is 60mm.
+H alt:  Mean wing length is not 60mm.
+alpha = 0.02
+```{r Problem 2, E/F/G/H}
+WL <- finches$winglength
+n2 <- length(na.omit(WL))
+se2 <- sd(na.omit(WL))/sqrt(n2)
+mean(na.omit(WL)) + qt(c(.01, .99), n2-1)*se2
+
+t2 <- (mean(na.omit(WL)) - 60)/se2
+p2<- 2*(1-pt(abs(t2), df= n2-1))
+```
+We are 98% confident that the mean wing length of population finches is between 70.4 and 72.7 mm.
+Our p-value was less than 0.00001 and is less than our level of significance, so we can reject the null hypothesis.
+Finches from islands Santa Cruz, San Cristobal, and Floreana have average wing lengths of between 70 and 73 millimeters. 
+
+Two-Sample Hypothesis Test
+H null: Wing length of finches is the same.
+H alt: Wing length of finches is not the same.
+alpha = 0.02
+```{r}
+with(dWL, {
+  tstar <- qt(c(0.01, 0.99), min(n2-1))
+  -diff(MnWL) + tstar*sqrt(sum(VarWL/n2))})
+
+# p-value
+with(dWL, {
+  t3 <- diff(MnWL)/sqrt(sum(VarWL/n2))
+  2*(1-pt(abs(t3), min(n2-1)))})
+```
+I am 98% conident that the population difference in wing length between Islands Finches is between -2.82mm and 2.85mm.
+Our p-value is larger than our level of significance, so we fail to reject our null hypothesis.
+Finches from islands Santa Cruz and Floreana have wing spans similar in length and finches from San Cristobal have slightly longer wing lengths. 

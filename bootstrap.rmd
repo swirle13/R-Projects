@@ -1,0 +1,66 @@
+---
+title: "Bootstrap"
+author: "Matthew Johnson"
+date: "November 9, 2017" 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 5, fig.height = 4, echo = TRUE)
+suppressMessages({
+  library(tidyverse)
+  library(boot)
+})
+```
+
+
+```{r, Problem 1, Part A}
+data("diamonds")
+p <- qplot(clarity, price, data=diamonds, geom="boxplot") + stat_summary(fun.y=mean, colour="dark gray",
+geom="point", size=4) + theme(axis.text.x=element_text(angle=45, hjust=1))
+p
+model <- lm(price~clarity, data=diamonds)
+anova(model)
+yhat <- fitted(model)
+yhat
+```
+The values that are returning are the estimated mean of that data point given its clarity.
+
+```{r Problem 1, Part B}
+coefficients(model)
+```
+The intercept is the difference in group mean between the first level, which is called a intercept, and the rest of the levels' group means.
+
+```{r, Problem 1, Part C}
+(residuals(model))
+```
+I chose a positive number, 288.88536, and a negative number, -516.73707. What these numbers show is the difference between the sampled data point and the calculated mean for its group. 288 means that the sampled data point was $288 more than the group mean for the group it belonged to. The negative number shows just the opposite, $516 less than the group average for that sampled data point.
+
+Problem 2, Part A
+For Problem 2, we'll be using the Diamonds dataset that I have used in the previous question, which is a built in dataset with tidyverse. I'll be using different variables. I will be using the variable Cut against the variable Price. I'm looking to see the correlation between the cut of a diamond and the average price. We're going to be using a 98% confidence interval, meaning an alpha of 0.02.
+```{r Problem 2, Part B}
+p2 <- qplot(cut, price, data=diamonds, geom="boxplot") + stat_summary(fun.y=mean, colour="dark gray",
+geom="point", size=4) #+ theme(axis.text.x=element_text(angle=45, hjust=1))
+p2
+```
+Problem 2, Part C
+ 
+```{r}
+diff_means <- function(data, i) {
+  data[i,] %>%
+    group_by(cut) %>%
+    summarise(m=mean(price)) %>%
+    .[['m']] %>% # extract column named m
+    diff %>% # take difference in
+    `*`(-1) # same order as t.test
+}
+
+b <- diamonds %>%
+  select(price, cut) %>%
+  na.omit %>%
+  boot(., statistic=diff_means, R=2000,
+    parallel="multicore", ncpus=4) # dope
+
+bCI <- boot.ci(b, conf=0.95, type="bca")
+bCI
+```
