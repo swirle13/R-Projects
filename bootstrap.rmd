@@ -43,9 +43,8 @@ p2 <- qplot(cut, price, data=diamonds, geom="boxplot") + stat_summary(fun.y=mean
 geom="point", size=4) #+ theme(axis.text.x=element_text(angle=45, hjust=1))
 p2
 ```
-Problem 2, Part C
  
-```{r}
+```{r, Problem 2, Part C}
 diff_means <- function(data, i) {
   data[i,] %>%
     group_by(cut) %>%
@@ -55,12 +54,14 @@ diff_means <- function(data, i) {
     `*`(-1) # same order as t.test
 }
 
-b <- diamonds %>%
+b <- diamonds[sample(1:nrow(diamonds), 5400),] %>%
   select(price, cut) %>%
   na.omit %>%
-  boot(., statistic=diff_means, R=2000,
+  boot(., statistic=diff_means, R=10000,
     parallel="multicore", ncpus=4) # dope
 
-bCI <- boot.ci(b, conf=0.95, type="bca")
+bCI <- boot.ci(b, conf=0.98 , type="bca")
 bCI
 ```
+The bootstrapped confidence interval with 98% confidence is between -472.8 and 1010.8.
+English: I calculated from my sampled data a new range of calculated average of price based on the cut. With 98% confidence, the range of average price based on the cut is between -$472.80 and $1010.80 from the average, per type of cut.
